@@ -1,0 +1,46 @@
+Create a complete menu-driven 2D Graphics Editor in C using a 2D character array as the drawing canvas.
+
+The canvas should be a fixed-size grid initialized with '_' representing empty space. Provide functions to initialize and display the canvas with proper row and column indexing.
+
+Implement a safe pixel plotting function that sets '*' on the canvas only if the coordinates are within valid bounds.
+
+Implement Bresenham’s line drawing algorithm using only integer arithmetic. The function must support all directions (horizontal, vertical, diagonal, and reverse directions).
+
+Using the line function, implement:
+- Rectangle drawing function (using four lines)
+- Triangle drawing function (using three lines)
+
+Implement the midpoint circle drawing algorithm that plots symmetric points in all eight octants.
+
+Extend the system to support multiple drawable objects using a struct array. Each object must contain:
+- id
+- type (line, rectangle, triangle, circle, etc.)
+- coordinates
+- radius (if circle)
+- active flag
+
+Maintain all objects in a global array and implement a redraw system that:
+- clears the canvas
+- redraws all active objects from the array whenever any modification occurs
+
+Create a menu-driven interface that supports:
+- Add object (line, rectangle, triangle, circle)
+- Delete object by ID (mark inactive instead of removing)
+- Modify object by ID (update coordinates based on type)
+- List all active objects with their details
+- Display canvas
+
+Add input validation and boundary checking so no drawing occurs outside the canvas and invalid inputs do not crash the program.
+
+Enhance the line drawing system by adding:
+- thick line (draw multiple offset lines)
+- dashed line (pattern-based drawing)
+
+Add a filled rectangle feature that fills all interior cells instead of only drawing borders.
+
+Implement file handling:
+- Save all objects to a file
+- Load objects from a file
+After loading, reconstruct the canvas using the redraw system.
+
+Ensure the program is modular, clean, and uses clear function separation for canvas, shapes, object management, and file operations.
