@@ -59,7 +59,7 @@ void printCanvas() {
     }
 }
 
-/* ---------------- LINE (BRESENHAM) ---------------- */
+/* ---------------- LINE ---------------- */
 
 void drawLine(int x1,int y1,int x2,int y2) {
     int dx = abs(x2-x1);
@@ -82,11 +82,9 @@ void drawLine(int x1,int y1,int x2,int y2) {
 /* ---------------- THICK LINE ---------------- */
 
 void drawThickLine(int x1,int y1,int x2,int y2) {
-    for(int i=-1;i<=1;i++) {
-        for(int j=-1;j<=1;j++) {
+    for(int i=-1;i<=1;i++)
+        for(int j=-1;j<=1;j++)
             drawLine(x1+i,y1+j,x2+i,y2+j);
-        }
-    }
 }
 
 /* ---------------- DASHED LINE ---------------- */
@@ -97,13 +95,13 @@ void drawDashedLine(int x1,int y1,int x2,int y2) {
     int sx = (x1<x2)?1:-1;
     int sy = (y1<y2)?1:-1;
     int err = dx - dy;
-    int countDash = 0;
+    int c = 0;
 
     while(1) {
-        if(countDash % 2 == 0)
+        if(c % 2 == 0)
             setPixel(x1,y1);
 
-        countDash++;
+        c++;
 
         if(x1==x2 && y1==y2) break;
 
@@ -114,7 +112,7 @@ void drawDashedLine(int x1,int y1,int x2,int y2) {
     }
 }
 
-/* ---------------- RECTANGLE ---------------- */
+/* ---------------- RECT ---------------- */
 
 void drawRect(int x1,int y1,int x2,int y2) {
     drawLine(x1,y1,x2,y1);
@@ -123,7 +121,7 @@ void drawRect(int x1,int y1,int x2,int y2) {
     drawLine(x1,y2,x1,y1);
 }
 
-/* FILLED RECT */
+/* ---------------- FILLED RECT ---------------- */
 
 void drawFillRect(int x1,int y1,int x2,int y2) {
     for(int i=y1;i<=y2;i++)
@@ -157,17 +155,12 @@ void drawCircle(int cx,int cy,int r) {
         setPixel(cx-y,cy-x);
 
         x++;
-
-        if(d<0)
-            d += 2*x+1;
-        else {
-            y--;
-            d += 2*(x-y)+1;
-        }
+        if(d<0) d += 2*x+1;
+        else { y--; d += 2*(x-y)+1; }
     }
 }
 
-/* ---------------- REDRAW ENGINE ---------------- */
+/* ---------------- REDRAW ---------------- */
 
 void redraw() {
     initCanvas();
@@ -218,32 +211,29 @@ void addShape() {
     s.id = count;
     s.active = 1;
 
+    int temp;
     printf("\n1.Line 2.Rect 3.FillRect 4.Triangle 5.Circle 6.Dashed 7.Thick\nChoice: ");
-    scanf("%d",(int*)&s.type);
+    scanf("%d",&temp);
+    s.type = (Type)temp;
 
     switch(s.type) {
-
         case LINE:
         case DLINE:
         case TLINE:
-            printf("x1 y1 x2 y2: ");
-            scanf("%d%d%d%d",&s.x1,&s.y1,&s.x2,&s.y2);
-            break;
-
         case RECT:
         case FILL_RECT:
-            printf("x1 y1 x2 y2: ");
+            printf("Enter x1 y1 x2 y2: ");
             scanf("%d%d%d%d",&s.x1,&s.y1,&s.x2,&s.y2);
             break;
 
         case TRI:
-            printf("x1 y1 x2 y2 x3 y3: ");
+            printf("Enter x1 y1 x2 y2 x3 y3: ");
             scanf("%d%d%d%d%d%d",
                 &s.x1,&s.y1,&s.x2,&s.y2,&s.x3,&s.y3);
             break;
 
         case CIRCLE:
-            printf("cx cy r: ");
+            printf("Enter cx cy r: ");
             scanf("%d%d%d",&s.x1,&s.y1,&s.r);
             break;
     }
@@ -265,6 +255,7 @@ void listShapes() {
 
 void deleteShape() {
     listShapes();
+
     int id;
     printf("Enter ID: ");
     scanf("%d",&id);
@@ -279,6 +270,7 @@ void deleteShape() {
 
 void modifyShape() {
     listShapes();
+
     int id;
     printf("Enter ID: ");
     scanf("%d",&id);
@@ -288,13 +280,12 @@ void modifyShape() {
 
     Shape *s = &shapes[id];
 
+    printf("Enter new values:\n");
+
     switch(s->type) {
         case LINE:
         case DLINE:
         case TLINE:
-            scanf("%d%d%d%d",&s->x1,&s->y1,&s->x2,&s->y2);
-            break;
-
         case RECT:
         case FILL_RECT:
             scanf("%d%d%d%d",&s->x1,&s->y1,&s->x2,&s->y2);
@@ -313,18 +304,19 @@ void modifyShape() {
     redraw();
 }
 
-/* ---------------- SAVE/LOAD ---------------- */
+/* ---------------- SAVE ---------------- */
 
 void saveFile() {
-    FILE *f = fopen("data.txt","w");
+    FILE *f = fopen("data.bin","wb");
     for(int i=0;i<count;i++)
         fwrite(&shapes[i],sizeof(Shape),1,f);
     fclose(f);
-    printf("Saved!\n");
 }
 
+/* ---------------- LOAD ---------------- */
+
 void loadFile() {
-    FILE *f = fopen("data.txt","r");
+    FILE *f = fopen("data.bin","rb");
     if(!f) return;
 
     count = 0;
